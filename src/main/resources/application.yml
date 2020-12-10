@@ -1,0 +1,31 @@
+spring:
+  cloud:
+    function.definition: process
+    stream:
+      bindings:
+        process-in-0:
+          destination: IN
+          binder: enricherKStreamBinder
+          deserializationExceptionHandler: logAndContinue
+        process-out-0:
+          destination: OUT
+          binder: enricherKStreamBinder
+          # ... then other mappings
+      binders:
+        enricherKStreamBinder:
+          type: kstream
+          configuration:
+            commit.interval.ms: 100
+          environment:
+            spring.cloud.stream.kafka.streams.binder:
+              brokers: 192.168.0.155:9092
+              deserializationExceptionHandler: logAndContinue
+              applicationId: appId_${spring.profiles.active}_
+        # ... then other binders
+
+management:
+  endpoints:
+    enabled-by-default: true
+  endpoint:
+    health:
+      show-details: ALWAYS
